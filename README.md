@@ -1,6 +1,6 @@
-[![build](https://github.com/ROCm/mibench/actions/workflows/build.yml/badge.svg)](https://github.com/ROCm/mibench/actions/workflows/build.yml)
+[![build](https://github.com/ROCm/rocm-amdgpu-bench/actions/workflows/build.yml/badge.svg)](https://github.com/ROCm/rocm-amdgpu-bench/actions/workflows/build.yml)
 
-# roofline
+# rocm-amdgpu-bench: a roofline utility
 
 This repository houses a proprietary rooflining utility for
 benchmarking AMD Instinct GPUs starting with MI200. The `roofline`
