@@ -548,8 +548,10 @@ int main(int argc, char **argv)
         // warm up first use default setting
         numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
 
+        int numThreads = numWorkgroups * workgroupSize;
+
         /* FP32 benchmark */
-        int nSize = DEFAULT_DATASET_SIZE / sizeof(float);
+        int nSize = DEFAULT_DATASET_SIZE / sizeof(float) / numThreads * numThreads;
 
         hipLaunchKernelGGL((flops_benchmark<float, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (float *)memBlock, nSize);
         HIP_ASSERT(hipDeviceSynchronize());
@@ -591,7 +593,7 @@ int main(int argc, char **argv)
 
         /* FP64 benchmark */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
-        nSize = DEFAULT_DATASET_SIZE / sizeof(double);
+        nSize = DEFAULT_DATASET_SIZE / sizeof(double) / numThreads * numThreads;
         hipLaunchKernelGGL((flops_benchmark<double, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (double *)memBlock, nSize);
         HIP_ASSERT(hipDeviceSynchronize());
 
