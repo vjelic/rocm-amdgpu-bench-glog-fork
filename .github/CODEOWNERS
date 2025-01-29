@@ -1,0 +1,5 @@
+@cfallows-amd
+
+# Documentation files
+*.md @ROCm/rocm-documentation
+*.rst @ROCm/rocm-documentation
