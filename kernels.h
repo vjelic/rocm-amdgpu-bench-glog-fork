@@ -72,9 +72,8 @@ __global__ void HBM_bw(T *dst, const T *src)
     dst[gid] = src[gid];
 }
 
-
 template<typename T, int nFMA>
-__global__ void flops_benchmark(T *buf, uint32_t nSize)
+__global__ void flops_benchmark(T *buf, uint32_t nSize, T randNum)
 {
     const uint32_t gid = hipBlockDim_x * hipBlockIdx_x + hipThreadIdx_x;
     const uint32_t nThreads  = gridDim.x * blockDim.x;
@@ -82,10 +81,10 @@ __global__ void flops_benchmark(T *buf, uint32_t nSize)
     const uint32_t maxOffset = nEntriesPerThread * nThreads;
 
     T *ptr;
-    const T y = (T) 1.0;
+    const T y = (T) randNum;
 
     ptr = &buf[gid];
-    T x = (T) 2.0;
+    T x = (T) 3.0;
 
     for(uint32_t offset=0; offset < maxOffset; offset += nThreads)
     {

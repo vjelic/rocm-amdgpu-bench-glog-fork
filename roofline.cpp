@@ -565,7 +565,7 @@ int main(int argc, char **argv)
          *
          * **********************************************/
 
-        // std::default_random_engine randEngine;
+        std::default_random_engine randEngine;
         int nSize = 0;
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         HIP_ASSERT(hipMalloc(&memBlock, DEFAULT_DATASET_SIZE));
@@ -576,8 +576,9 @@ int main(int argc, char **argv)
         int numThreads = numWorkgroups * workgroupSize;
 
         /* FP8 benchmark */
-        numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
+        std::uniform_real_distribution<float> floatDistribution(0.0, 1000.0);
+
         if (auto search = unsupported_datatypes.find("F8"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
@@ -591,10 +592,12 @@ int main(int argc, char **argv)
         }
         else
         {
-            // std::uniform_real_distribution<float> distribution(0.0, 1000.0);
+            float randFloat = floatDistribution(randEngine);
+            __hip_fp8_storage_t randFP8 = __hip_cvt_float_to_fp8(randFloat, __HIP_SATFINITE, __HIP_E4M3_FNUZ);
 
+            numExperiments = DEFAULT_NUM_EXPERIMENTS;
             nSize = DEFAULT_DATASET_SIZE / sizeof(__hip_fp8_storage_t) / numThreads * numThreads;
-            hipLaunchKernelGGL((flops_benchmark<__hip_fp8_storage_t, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (__hip_fp8_storage_t *)memBlock, nSize);
+            hipLaunchKernelGGL((flops_benchmark<__hip_fp8_storage_t, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (__hip_fp8_storage_t *)memBlock, nSize, randFP8);
             HIP_ASSERT(hipDeviceSynchronize());
 
             totalFlops = (uint64_t)nSize * 1024 * 2;
@@ -603,7 +606,7 @@ int main(int argc, char **argv)
             {
 
                 initHipEvents(start, stop);
-                hipLaunchKernelGGL((flops_benchmark<__hip_fp8_storage_t, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (__hip_fp8_storage_t *)memBlock, nSize);
+                hipLaunchKernelGGL((flops_benchmark<__hip_fp8_storage_t, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (__hip_fp8_storage_t *)memBlock, nSize, randFP8);
                 stopHipEvents(eventMs, start, stop);
 
                 samples[n] = (float)totalFlops / eventMs / 1e6;
@@ -634,9 +637,12 @@ int main(int argc, char **argv)
         }
 
         /* FP32 benchmark */
+        float randFloat = floatDistribution(randEngine);
+
+        numExperiments = DEFAULT_NUM_EXPERIMENTS;
         nSize = DEFAULT_DATASET_SIZE / sizeof(float) / numThreads * numThreads;
 
-        hipLaunchKernelGGL((flops_benchmark<float, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (float *)memBlock, nSize);
+        hipLaunchKernelGGL((flops_benchmark<float, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (float *)memBlock, nSize, randFloat);
         HIP_ASSERT(hipDeviceSynchronize());
 
         totalFlops = (uint64_t)nSize * 1024 * 2;
@@ -645,7 +651,7 @@ int main(int argc, char **argv)
         {
 
             initHipEvents(start, stop);
-            hipLaunchKernelGGL((flops_benchmark<float, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (float *)memBlock, nSize);
+            hipLaunchKernelGGL((flops_benchmark<float, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (float *)memBlock, nSize, randFloat);
             stopHipEvents(eventMs, start, stop);
 
             samples[n] = (float)totalFlops / eventMs / 1e6;
@@ -675,9 +681,12 @@ int main(int argc, char **argv)
         }
 
         /* FP64 benchmark */
+        std::uniform_real_distribution<double> doubleDistribution(0.0, 1000.0);
+        double randDouble = doubleDistribution(randEngine);
+
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         nSize = DEFAULT_DATASET_SIZE / sizeof(double) / numThreads * numThreads;
-        hipLaunchKernelGGL((flops_benchmark<double, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (double *)memBlock, nSize);
+        hipLaunchKernelGGL((flops_benchmark<double, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (double *)memBlock, nSize, randDouble);
         HIP_ASSERT(hipDeviceSynchronize());
 
         totalFlops = (uint64_t)nSize * 1024 * 2;
@@ -686,7 +695,7 @@ int main(int argc, char **argv)
         {
 
             initHipEvents(start, stop);
-            hipLaunchKernelGGL((flops_benchmark<double, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (double *)memBlock, nSize);
+            hipLaunchKernelGGL((flops_benchmark<double, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (double *)memBlock, nSize, randDouble);
             stopHipEvents(eventMs, start, stop);
 
             samples[n] = (float)totalFlops / eventMs / 1e6;
