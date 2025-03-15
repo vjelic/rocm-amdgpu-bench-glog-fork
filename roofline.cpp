@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <getopt.h>
 #include <math.h>
 #include <map>
+#include <bits/stdc++.h>
 
 #include <hip/hip_fp8.h>
 
@@ -177,14 +178,26 @@ int main(int argc, char **argv)
     int numGpuDevices;
     HIP_ASSERT(hipGetDeviceCount(&numGpuDevices));
 
-    using archs_t = std::unordered_set<std::string>;
-    archs_t supported_archs{"gfx908", "gfx90a", "gfx940", "gfx941", "gfx942"};
+    using datatypes = std::unordered_set<std::string>;
+    using archs_t = std::map<std::string, datatypes>;
+    datatypes unsupported_datatypes;
+
+    /*  supported_archs indicates which archs are supported by rocm-amdgpu-bench,
+    *   and the corresponding datatypes which ARE NOT supported by the arch
+    */
+    archs_t supported_archs = {
+        {"gfx908", {"MALL", "FP8", "MFMA-F8", "MFMA-F64"}}, // MI100 series
+        {"gfx90a", {"MALL", "FP8", "MFMA-F8"}},             // MI200 series
+        {"gfx940", {"MFMA-BF16", "MFMA-I8"}},               // MI300A_A0
+        {"gfx941", {"MFMA-BF16", "MFMA-I8"}},               // MI300X_A0
+        {"gfx942", {"MFMA-BF16", "MFMA-I8"}},               // MI300A_A1, MI300X_A1
+    };
 
     if ((devID >= 0) && (devID < numGpuDevices))
     {
         auto gcnArch = device_arch(devID);
         quiet = false;
-        if (not supported_archs.contains(gcnArch))
+        if (auto search = supported_archs.find(gcnArch); search == supported_archs.end())
         {
             printf("Unsupported device architecture \"%s\" will be skipped\n", gcnArch.c_str());
         }
@@ -231,10 +244,16 @@ int main(int argc, char **argv)
 
         /* Skip incompatible devices */
         auto gcnArch = device_arch(dev);
-        if ((not supported_archs.contains(gcnArch)) || ((devID >= 0) && (dev != devID)))
+        auto searchArch = supported_archs.find(gcnArch);
+        if ((searchArch == supported_archs.end()) || ((devID >= 0) && (dev != devID)))
         {
             printf("GPU Device %d: Skipped\n", dev);
             continue;
+        }
+        else
+        {
+            /* Arch supported, record list of unsupported datatypes for referencing when profiling this individual device */
+            unsupported_datatypes = searchArch->second;
         }
         if (!quiet)
         {
@@ -310,8 +329,7 @@ int main(int argc, char **argv)
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
         int cacheSize = arch_sizes[gcnArch].MALL_size;
-        archs_t mall_unsupported{"gfx908", "gfx90a"};
-        if (mall_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("MALL"); search != unsupported_datatypes.end())
         {
             totalBytes = 0;
             samples[0] = 0;
@@ -546,6 +564,8 @@ int main(int argc, char **argv)
          * Peak FLOPs benchmarking
          *
          * **********************************************/
+
+        // std::default_random_engine randEngine;
         int nSize = 0;
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         HIP_ASSERT(hipMalloc(&memBlock, DEFAULT_DATASET_SIZE));
@@ -558,8 +578,7 @@ int main(int argc, char **argv)
         /* FP8 benchmark */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t f8_unsupported{"gfx908", "gfx90a"};
-        if (f8_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("F8"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -572,6 +591,8 @@ int main(int argc, char **argv)
         }
         else
         {
+            // std::uniform_real_distribution<float> distribution(0.0, 1000.0);
+
             nSize = DEFAULT_DATASET_SIZE / sizeof(__hip_fp8_storage_t) / numThreads * numThreads;
             hipLaunchKernelGGL((flops_benchmark<__hip_fp8_storage_t, 1024>), dim3(numWorkgroups), dim3(workgroupSize), 0, 0, (__hip_fp8_storage_t *)memBlock, nSize);
             HIP_ASSERT(hipDeviceSynchronize());
@@ -710,8 +731,7 @@ int main(int argc, char **argv)
         /* MFMA-F8 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_f8_unsupported{"gfx908", "gfx90a"};
-        if (mfma_f8_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("MFMA-F8"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -761,8 +781,7 @@ int main(int argc, char **argv)
         /* MFMA-BF16 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_bf16_unsupported{"gfx940", "gfx941", "gfx942"};
-        if (mfma_bf16_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("MFMA-BF16"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -886,8 +905,7 @@ int main(int argc, char **argv)
         /* MFMA-F64 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_f64_unsupported{"gfx908"};
-        if (mfma_f64_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("MFMA-F64"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -938,8 +956,7 @@ int main(int argc, char **argv)
         /* MFMA-I8 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_i8_unsupported{"gfx940", "gfx941", "gfx942"};
-        if (mfma_i8_unsupported.contains(gcnArch))
+        if (auto search = unsupported_datatypes.find("MFMA-I8"); search != unsupported_datatypes.end())
         {
             totalFlops = 0;
             samples[0] = 0;
