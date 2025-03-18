@@ -182,10 +182,8 @@ int main(int argc, char **argv)
     using archs_t = std::map<std::string, datatypes>;
     datatypes unsupported_datatypes;
 
-    /*  supported_archs indicates which archs are supported by rocm-amdgpu-bench,
-    *   and the corresponding datatypes which ARE NOT supported by the arch
-    */
-    archs_t supported_archs = {
+    /* supported_archs_unsupported_dt indicates supported archs and the corrseponding datatypes which ARE NOT supported by each arch */
+    archs_t supported_archs_unsupported_dt = {
         {"gfx908", {"MALL", "FP8", "MFMA-F8", "MFMA-F64"}}, // MI100 series
         {"gfx90a", {"MALL", "FP8", "MFMA-F8"}},             // MI200 series
         {"gfx940", {"MFMA-BF16", "MFMA-I8"}},               // MI300A_A0
@@ -197,7 +195,7 @@ int main(int argc, char **argv)
     {
         auto gcnArch = device_arch(devID);
         quiet = false;
-        if (auto search = supported_archs.find(gcnArch); search == supported_archs.end())
+        if (auto search = supported_archs_unsupported_dt.find(gcnArch); search == supported_archs_unsupported_dt.end())
         {
             printf("Unsupported device architecture \"%s\" will be skipped\n", gcnArch.c_str());
         }
@@ -244,8 +242,8 @@ int main(int argc, char **argv)
 
         /* Skip incompatible devices */
         auto gcnArch = device_arch(dev);
-        auto searchArch = supported_archs.find(gcnArch);
-        if ((searchArch == supported_archs.end()) || ((devID >= 0) && (dev != devID)))
+        auto searchArch = supported_archs_unsupported_dt.find(gcnArch);
+        if ((searchArch == supported_archs_unsupported_dt.end()) || ((devID >= 0) && (dev != devID)))
         {
             printf("GPU Device %d: Skipped\n", dev);
             continue;

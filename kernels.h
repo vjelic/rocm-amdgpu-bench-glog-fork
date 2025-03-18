@@ -81,9 +81,12 @@ __global__ void flops_benchmark(T *buf, uint32_t nSize, T randNum)
     const uint32_t maxOffset = nEntriesPerThread * nThreads;
 
     T *ptr;
+    // Using a random fp number generated prior for addition
     const T y = (T) randNum;
 
     ptr = &buf[gid];
+    // Using 3.0 as buffer multiplier to avoid output modifier application
+    // See 6.2.2 in MI300 ISA (https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/instruction-set-architectures/amd-instinct-mi300-cdna3-instruction-set-architecture.pdf)
     T x = (T) 3.0;
 
     for(uint32_t offset=0; offset < maxOffset; offset += nThreads)
