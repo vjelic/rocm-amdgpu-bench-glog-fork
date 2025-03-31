@@ -182,7 +182,7 @@ int main(int argc, char **argv)
     {
         auto gcnArch = device_arch(devID);
         quiet = false;
-        if ( gcnArch is not "gfx940" and gcnArch is not "gfx941" and gcnArch is not "gfx942" )
+        if (gcnArch != "gfx940" && gcnArch != "gfx941" && gcnArch != "gfx942")
         {
             printf("Unsupported device architecture \"%s\" will be skipped\n", gcnArch.c_str());
         }
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 
         /* Skip incompatible devices */
         auto gcnArch = device_arch(dev);
-        if ( ( gcnArch is not "gfx940" and gcnArch is not "gfx941" and gcnArch is not "gfx942" ) || ((devID >= 0) && (dev != devID)))
+        if ((gcnArch != "gfx940" && gcnArch != "gfx941" && gcnArch != "gfx942") || ((devID >= 0) && (dev != devID)))
         {
             printf("GPU Device %d: Skipped\n", dev);
             continue;
