@@ -306,19 +306,19 @@ int main(int argc, char **argv)
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
         int cacheSize = arch_sizes[gcnArch].MALL_size;
-        archs_t mall_unsupported{"gfx908", "gfx90a"};
-        if (mall_unsupported.contains(gcnArch))
-        {
-            totalBytes = 0;
-            samples[0] = 0;
-            numExperiments = 1;
-            eventMs = 0;
-            if (!quiet)
-            {
-                showProgress(1);
-            }
-        }
-        else
+        // archs_t mall_unsupported{"gfx908", "gfx90a"};
+        // if (mall_unsupported.contains(gcnArch))
+        // {
+        //     totalBytes = 0;
+        //     samples[0] = 0;
+        //     numExperiments = 1;
+        //     eventMs = 0;
+        //     if (!quiet)
+        //     {
+        //         showProgress(1);
+        //     }
+        // }
+        // else
         {
             HIP_ASSERT(hipMalloc(&memBlock, cacheSize));
             HIP_ASSERT(hipMalloc(&dummy, workgroupSize * sizeof(float)));
@@ -648,8 +648,8 @@ int main(int argc, char **argv)
         /* MFMA-BF16 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_bf16_unsupported{"gfx940", "gfx941", "gfx942"};
-        if (mfma_bf16_unsupported.contains(gcnArch))
+        // archs_t mfma_bf16_unsupported{"gfx940", "gfx941", "gfx942"};
+        // if (mfma_bf16_unsupported.contains(gcnArch))
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -660,23 +660,23 @@ int main(int argc, char **argv)
                 showProgress(1);
             }
         }
-        else
-        {
-            totalFlops = (uint64_t)numWorkgroups * SIMDS_PER_CU * numIters * MFMA_BF16_OPS;
-            for (int n = 0; n < numExperiments; n++)
-            {
+        // else
+        // {
+        //     totalFlops = (uint64_t)numWorkgroups * SIMDS_PER_CU * numIters * MFMA_BF16_OPS;
+        //     for (int n = 0; n < numExperiments; n++)
+        //     {
 
-                initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_bf16, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
-                stopHipEvents(eventMs, start, stop);
+        //         initHipEvents(start, stop);
+        //         hipLaunchKernelGGL(mfma_bf16, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
+        //         stopHipEvents(eventMs, start, stop);
 
-                samples[n] = totalFlops / eventMs / 1e6;
-                if (!quiet)
-                {
-                    showProgress((float)n / numExperiments);
-                }
-            }
-        }
+        //         samples[n] = totalFlops / eventMs / 1e6;
+        //         if (!quiet)
+        //         {
+        //             showProgress((float)n / numExperiments);
+        //         }
+        //     }
+        // }
         stats(samples, numExperiments, &mean, &stdev, &confidence);
 
         perf_metrics.push_back(mean);
@@ -773,19 +773,19 @@ int main(int argc, char **argv)
         /* MFMA-F64 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_f64_unsupported{"gfx908"};
-        if (mfma_f64_unsupported.contains(gcnArch))
-        {
-            totalFlops = 0;
-            samples[0] = 0;
-            numExperiments = 1;
-            eventMs = 0;
-            if (!quiet)
-            {
-                showProgress(1);
-            }
-        }
-        else
+        // archs_t mfma_f64_unsupported{"gfx908"};
+        // if (mfma_f64_unsupported.contains(gcnArch))
+        // {
+        //     totalFlops = 0;
+        //     samples[0] = 0;
+        //     numExperiments = 1;
+        //     eventMs = 0;
+        //     if (!quiet)
+        //     {
+        //         showProgress(1);
+        //     }
+        // }
+        // else
         {
             totalFlops = (uint64_t)numWorkgroups * SIMDS_PER_CU * numIters * MFMA_F64_OPS;
             for (int n = 0; n < numExperiments; n++)
@@ -825,8 +825,8 @@ int main(int argc, char **argv)
         /* MFMA-I8 */
         numExperiments = DEFAULT_NUM_EXPERIMENTS;
         currBenchmark++;
-        archs_t mfma_i8_unsupported{"gfx940", "gfx941", "gfx942"};
-        if (mfma_i8_unsupported.contains(gcnArch))
+        // archs_t mfma_i8_unsupported{"gfx940", "gfx941", "gfx942"};
+        // if (mfma_i8_unsupported.contains(gcnArch))
         {
             totalFlops = 0;
             samples[0] = 0;
@@ -837,23 +837,23 @@ int main(int argc, char **argv)
                 showProgress(1);
             }
         }
-        else
-        {
-            totalFlops = (uint64_t)numWorkgroups * SIMDS_PER_CU * numIters * MFMA_I8_OPS;
-            for (int n = 0; n < numExperiments; n++)
-            {
+        // else
+        // {
+        //     totalFlops = (uint64_t)numWorkgroups * SIMDS_PER_CU * numIters * MFMA_I8_OPS;
+        //     for (int n = 0; n < numExperiments; n++)
+        //     {
 
-                initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_i8, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
-                stopHipEvents(eventMs, start, stop);
+        //         initHipEvents(start, stop);
+        //         hipLaunchKernelGGL(mfma_i8, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
+        //         stopHipEvents(eventMs, start, stop);
 
-                samples[n] = totalFlops / eventMs / 1e6;
-                if (!quiet)
-                {
-                    showProgress((float)n / numExperiments);
-                }
-            }
-        }
+        //         samples[n] = totalFlops / eventMs / 1e6;
+        //         if (!quiet)
+        //         {
+        //             showProgress((float)n / numExperiments);
+        //         }
+        //     }
+        // }
 
         stats(samples, numExperiments, &mean, &stdev, &confidence);
 
