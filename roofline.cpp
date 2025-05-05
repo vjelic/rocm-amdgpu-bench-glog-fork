@@ -189,11 +189,11 @@ int main(int argc, char **argv)
 
     /* supported_archs_unsupported_dt indicates supported archs and the corrseponding datatypes which ARE NOT supported by each arch */
     archs_t supported_archs_unsupported_dt = {
-        {"gfx908", {"MALL", "FP8", "FP16", "MFMA-F8", "MFMA-F64"}}, // MI100 series
-        {"gfx90a", {"MALL", "FP8", "MFMA-F8"}},             // MI200 series
-        {"gfx940", {}}, // MI300A_A0
-        {"gfx941", {}}, // MI300X_A0
-        {"gfx942", {}}, // MI300A_A1, MI300X_A1, MI308
+        {"gfx908", {"MALL", "FP4", "FP6", "FP8", "FP16", "MFMA-F8", "MFMA-F64"}}, // MI100 series
+        {"gfx90a", {"MALL", "FP4", "FP6", "FP8", "MFMA-F8"}},             // MI200 series
+        {"gfx940", {"FP4", "FP6"}}, // MI300A_A0
+        {"gfx941", {"FP4", "FP6"}}, // MI300X_A0
+        {"gfx942", {"FP4", "FP6"}}, // MI300A_A1, MI300X_A1, MI308
         {"gfx950", {}}, // MI350, MI355
     };
 
@@ -974,7 +974,7 @@ int main(int argc, char **argv)
             {
 
                 initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
+                hipLaunchKernelGGL(mfma_f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, 4, 4);
                 stopHipEvents(eventMs, start, stop);
 
                 samples[n] = totalFlops / eventMs / 1e6;
@@ -1024,7 +1024,7 @@ int main(int argc, char **argv)
             {
 
                 initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_f6, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy);
+                hipLaunchKernelGGL(mfma_f6, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, 2, 2);
                 stopHipEvents(eventMs, start, stop);
 
                 samples[n] = totalFlops / eventMs / 1e6;
