@@ -54,6 +54,7 @@ __global__ void LDS_bw(int numIter, float *dummy)
 
 using int32_16vec = __attribute__((__vector_size__(16 * sizeof(int)))) int;
 using int32_4vec = __attribute__((__vector_size__(4 * sizeof(int)))) int;
+using int32_6vec = __attribute__((__vector_size__(6 * sizeof(int)))) int;
 using bf16_2vec = __attribute__((__vector_size__(1 * sizeof(__2i16))))  short;
 using bf16_4vec = __attribute__((__vector_size__(2 * sizeof(__2i16))))  short;
 using f32_16vec = __attribute__((__vector_size__(16 * sizeof(float)))) float;
@@ -127,7 +128,7 @@ __global__ void mfma_f6(int iter, float *dummy)
 // MI350 series only
 #if defined(__gfx950__)
     // Input: 6 i32 registers
-    int32_4vec a;
+    int32_6vec a;
     a[0] = a[1] = a[2] = a[3] = a[4] = a[5] = threadIdx.x;
 
     // Output: 16 F32 registers
