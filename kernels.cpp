@@ -108,7 +108,7 @@ __global__ void mfma_f8f6f4(int iter, float *dummy, int dt1, int dt2)
 // MI350 series only
 #if defined(__gfx950__)
     // Input: 8 i32 registers
-    int32_6vec a;
+    int32_8vec a;
     a[0] = a[1] = a[2] = a[3] = a[4] = a[5] = a[6] = a[7] = threadIdx.x;
 
     // Output: 16 F32 registers
