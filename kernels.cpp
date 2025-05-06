@@ -103,7 +103,7 @@ __global__ void mfma_i8(int iter, float *dummy)
 * 3 = bf6
 * 4 = fp4
 */
-__global__ void mfma_f8f6f4(int iter, float *dummy, int dt1, int dt2)
+__global__ void mfma_f8f6f4(int iter, float *dummy, MX_DATAFORMATS datatype)
 {
 // MI350 series only
 #if defined(__gfx950__)
@@ -115,9 +115,38 @@ __global__ void mfma_f8f6f4(int iter, float *dummy, int dt1, int dt2)
     f32_16vec result = {0};
 
     // CDNA4: v_mfma_f32_32x32x64_f8f6f4    ops: 32x32x64x2 = 131072
-    for(int i = 0; i < iter; ++i)
+    switch (datatype)
     {
-        result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, dt1, dt2, 0, 0, 0, 0);
+        case 1: // bf8 x bf8
+            for(int i = 0; i < iter; ++i)
+            {
+                result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, 1, 1, 0, 0, 0, 0);
+            }
+            break;
+        case 2: // fp6 x fp6
+            for(int i = 0; i < iter; ++i)
+            {
+                result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, 2, 2, 0, 0, 0, 0);
+            }
+            break;
+        case 3: // bf6 x bf6
+            for(int i = 0; i < iter; ++i)
+            {
+                result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, 3, 3, 0, 0, 0, 0);
+            }
+            break;
+        case 4: // fp4 x fp4
+            for(int i = 0; i < iter; ++i)
+            {
+                result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, 4, 4, 0, 0, 0, 0);
+            }
+            break;
+    default: // fp8 x fp8
+        for(int i = 0; i < iter; ++i)
+        {
+            result = __builtin_amdgcn_mfma_scale_f32_32x32x64_f8f6f4(a, a, result, 0, 0, 0, 0, 0, 0);
+        }
+        break;
     }
 
     if (result[0] != 2*result[0])

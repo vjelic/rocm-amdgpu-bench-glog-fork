@@ -974,7 +974,7 @@ int main(int argc, char **argv)
             {
 
                 initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_f8f6f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, 4, 4);
+                hipLaunchKernelGGL(mfma_f8f6f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, FP4);
                 stopHipEvents(eventMs, start, stop);
 
                 samples[n] = totalFlops / eventMs / 1e6;
@@ -1024,7 +1024,7 @@ int main(int argc, char **argv)
             {
 
                 initHipEvents(start, stop);
-                hipLaunchKernelGGL(mfma_f8f6f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, 2, 2);
+                hipLaunchKernelGGL(mfma_f8f6f4, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, numIters, dummy, FP6);
                 stopHipEvents(eventMs, start, stop);
 
                 samples[n] = totalFlops / eventMs / 1e6;
