@@ -234,6 +234,7 @@ int main(int argc, char **argv)
     ofile << "I8Ops,I8OpsLow,I8OpsHigh,";
     ofile << "I32Ops,I32OpsLow,I32OpsHigh,";
     ofile << "I64Ops,I64OpsLow,I64OpsHigh,";
+    ofile << "MFMAF4Flops,MFMAF4FlopsLow,MFMAF4FlopsHigh,MFMAF6Flops,MFMAF6FlopsLow,MFMAF6FlopsHigh,";
     ofile << "MFMAF8Flops,MFMAF8FlopsLow,MFMAF8FlopsHigh,";
     ofile << "MFMAF16Flops,MFMAF16FlopsLow,MFMAF16FlopsHigh,";
     ofile << "MFMABF16Flops,MFMABF16FlopsLow,MFMABF16FlopsHigh,";
