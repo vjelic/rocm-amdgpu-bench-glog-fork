@@ -17,54 +17,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef __ROOFLINE_H__
-#define __ROOFLINE_H__
+#ifndef __GFX_ROOFLINE_COMMON_H__
+#define __GFX_ROOFLINE_COMMON_H__
 
-#if AMDGPU_TARGET == GFX90A
+#include <hip/hip_runtime.h>
+#include <string>
+#include <stdlib.h>
+#include <cstdio>
+#include <vector>
+#include <cassert>
 
-#define L2_CACHE_SIZE           (8*1024*1024)
-#define L1_CACHE_SIZE           (16*1024)
-#define LDS_SIZE                (65536)
-#else
+//#define HIP_ASSERT(x) (assert((x)==hipSuccess))
+#define HIP_ASSERT(x) { auto ret = (x); if(ret != hipSuccess) { fprintf(stderr, "%s:%d :: HIP error : %s\n", __FILE__, __LINE__, hipGetErrorString(ret));  throw std::runtime_error("hip_error"); }}
 
-// Default settings
-#define L2_CACHE_SIZE           (8*1024*1024)
-#define L1_CACHE_SIZE           (16*1024)
-#define LDS_SIZE                (65536)
+void help(void);
+void showProgress(float percentage);
 
+void stats(float *samples, int entries, float *mean, float *stdev, float *confidence);
+
+std::string device_arch(int device_id);
+int device_compute_units(int device_id);
+
+static inline
+void initHipEvents(hipEvent_t &start, hipEvent_t &stop)
+{
+    HIP_ASSERT(hipEventCreate(&start));
+    HIP_ASSERT(hipEventCreate(&stop));
+    HIP_ASSERT(hipEventRecord(start));
+}
+
+
+static inline
+void stopHipEvents(float &eventMs, hipEvent_t &start, hipEvent_t &stop)
+{
+    HIP_ASSERT(hipEventRecord(stop));
+    HIP_ASSERT(hipEventSynchronize(stop));
+    HIP_ASSERT(hipEventElapsedTime(&eventMs, start, stop));
+    HIP_ASSERT(hipEventDestroy(start));
+    HIP_ASSERT(hipEventDestroy(stop));
+}
 #endif
 
-struct arch_size_specs {
-    uint64_t L1_size;
-    uint64_t L2_size;
-    uint64_t MALL_size;
-    uint64_t LDS_size;
-    uint64_t CUs;
-};
-
-enum {
-    MFMA_F4_OPS = 131072, // for f8f6f4 scaling mfma builting
-    MFMA_F6_OPS = 131072, // for f8f6f4 scaling mfma builting
-    MFMA_F8_OPS = 32768,
-    MFMA_F16_OPS  = 16384,
-    MFMA_F32_OPS  = 4096,
-    MFMA_F64_OPS  = 2048,
-#if AMDGPU_TARGET == GFX90A
-    MFMA_I8_OPS   = 16384,
-    MFMA_BF16_OPS = 8192,
-#else
-    MFMA_I8_OPS   = 32768,
-    MFMA_BF16_OPS = 16384,
-#endif
-};
-
-const int SIMDS_PER_CU = 4;
-
-const int DEFAULT_WORKGROUP_SIZE = 256;
-const int DEFAULT_WORKGROUPS     = 8192;
-const int DEFAULT_THREADS        = (DEFAULT_WORKGROUP_SIZE * DEFAULT_WORKGROUPS);
-const int DEFAULT_NUM_EXPERIMENTS = 100;
-const int DEFAULT_NUM_ITERS       = 10;
-const int DEFAULT_DATASET_SIZE    = (512 * 1024 * 1024);
-
-#endif //__ROOFLINE_H__
