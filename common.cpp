@@ -92,3 +92,9 @@ std::string device_arch(int device_id){
   }
   return device_arch;
 }
+
+int device_compute_units(int device_id) {
+    hipDeviceProp_t props;
+    HIP_ASSERT(hipGetDeviceProperties(&props, device_id));
+    return props.multiProcessorCount;
+}

@@ -46,13 +46,12 @@ int main(int argc, char **argv)
 {
     using arch_size_t = std::unordered_map<std::string, arch_size_specs>;
     arch_size_t arch_sizes;
-    //                                     L1         L2               MALL              LDS        #CUs
-    arch_sizes["gfx908"] = arch_size_specs{16 * 1024, 8 * 1024 * 1024, 0, /*          */ 64 * 1024, 120}; // MI100
-    arch_sizes["gfx90a"] = arch_size_specs{16 * 1024, 8 * 1024 * 1024, 0, /*          */ 64 * 1024, 104}; // MI200 per die
-    arch_sizes["gfx940"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024, 228}; // MI300A A0 (Obsolete)
-    arch_sizes["gfx941"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024, 304}; // MI300X A0 (Obsolete)
-    arch_sizes["gfx942"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024, 304}; // MI300A/MI300X
-    arch_sizes["gfx950"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024, 256}; // MI355
+    arch_sizes["gfx908"] = arch_size_specs{16 * 1024, 8 * 1024 * 1024, 0, /*          */ 64 * 1024}; // MI100
+    arch_sizes["gfx90a"] = arch_size_specs{16 * 1024, 8 * 1024 * 1024, 0, /*          */ 64 * 1024}; // MI200 per die
+    arch_sizes["gfx940"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024}; // MI300A A0 (Obsolete)
+    arch_sizes["gfx941"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024}; // MI300X A0 (Obsolete)
+    arch_sizes["gfx942"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024}; // MI300A/MI300X
+    arch_sizes["gfx950"] = arch_size_specs{32 * 1024, 4 * 1024 * 1024, 64 * 1024 * 1024, 64 * 1024}; // MI355
 
     using cache_bw_kernel_t = decltype(Cache_bw<float, 1, 1>);
     using cache_bw_kernel_selector_t = std::unordered_map<std::string, cache_bw_kernel_t *>;
@@ -253,6 +252,8 @@ int main(int argc, char **argv)
 
         /* Skip incompatible devices */
         auto gcnArch = device_arch(dev);
+        auto CUs = device_compute_units(dev);
+
         auto searchArch = supported_archs_unsupported_dt.find(gcnArch);
         if ((searchArch == supported_archs_unsupported_dt.end()) || ((devID >= 0) && (dev != devID)))
         {
@@ -268,7 +269,6 @@ int main(int argc, char **argv)
         {
             hipDeviceProp_t props;
             HIP_ASSERT(hipGetDeviceProperties(&props, dev));
-
             printf("GPU Device %d (%s) with %d CUs: Profiling...\n", dev, gcnArch.c_str(),
                    props.multiProcessorCount);
         }
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
          *
          * **********************************************/
         int workgroupsPerCU = 20 * 1024;
-        numWorkgroups = arch_sizes[gcnArch].CUs * workgroupsPerCU;
+        numWorkgroups = CUs * workgroupsPerCU;
         datasetEntries = numWorkgroups * workgroupSize;
         HIP_ASSERT(hipMalloc(&d_src, datasetEntries * sizeof(double)));
         HIP_ASSERT(hipMalloc(&d_dst, datasetEntries * sizeof(double)));
@@ -356,7 +356,7 @@ int main(int argc, char **argv)
             auto MALL_bw_kernel = MALL_bw_kernel_selector[gcnArch];
 
             // warm up first with one iteration, filling the cache
-            numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+            numWorkgroups = 128 * CUs;
             numIters = 1;
             hipLaunchKernelGGL((MALL_bw_kernel), dim3(numWorkgroups), dim3(workgroupSize), 0, 0,
                                (const float *)memBlock, dummy, numIters);
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
         auto L2_bw_kernel = L2_bw_kernel_selector[gcnArch];
 
         // warm up first with one iteration, filling the cache
-        numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+        numWorkgroups = 128 * CUs;
         numIters = 1;
         hipLaunchKernelGGL((L2_bw_kernel), dim3(numWorkgroups), dim3(workgroupSize), 0, 0,
                            (const float *)memBlock, dummy, numIters);
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
         auto L1_bw_kernel = L1_bw_kernel_selector[gcnArch];
 
         // warm up first with one iteration, filling the cache
-        numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+        numWorkgroups = 128 * CUs;
         numIters = 1;
         hipLaunchKernelGGL((L1_bw_kernel), dim3(numWorkgroups), dim3(workgroupSize), 0, 0,
                            (const float *)memBlock, dummy, numIters);
@@ -526,7 +526,7 @@ int main(int argc, char **argv)
         HIP_ASSERT(hipMalloc(&dummy, workgroupSize * sizeof(float)));
 
         // warm up first use default setting
-        numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+        numWorkgroups = 128 * CUs;
         numIters = 2000;
         hipLaunchKernelGGL(LDS_bw, dim3(numWorkgroups), dim3(workgroupSize), 0, 0, 10, dummy);
         HIP_ASSERT(hipDeviceSynchronize());
@@ -578,7 +578,7 @@ int main(int argc, char **argv)
         HIP_ASSERT(hipMalloc(&memBlock, DEFAULT_DATASET_SIZE));
 
         // warm up first use default setting
-        numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+        numWorkgroups = 128 * CUs;
 
         int numThreads = numWorkgroups * workgroupSize;
 
@@ -951,7 +951,7 @@ int main(int argc, char **argv)
         HIP_ASSERT(hipMalloc(&dummy, 64 * sizeof(float)));
 
         // warm up first use default setting
-        numWorkgroups = 128 * arch_sizes[gcnArch].CUs;
+        numWorkgroups = 128 * CUs;
         numIters = 2000;
 
         /* MFMA-F4 */

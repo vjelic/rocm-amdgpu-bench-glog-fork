@@ -36,6 +36,7 @@ void showProgress(float percentage);
 void stats(float *samples, int entries, float *mean, float *stdev, float *confidence);
 
 std::string device_arch(int device_id);
+int device_compute_units(int device_id);
 
 static inline
 void initHipEvents(hipEvent_t &start, hipEvent_t &stop)

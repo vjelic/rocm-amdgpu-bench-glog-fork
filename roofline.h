@@ -39,7 +39,6 @@ struct arch_size_specs {
     uint64_t L2_size;
     uint64_t MALL_size;
     uint64_t LDS_size;
-    uint64_t CUs;
 };
 
 enum {
