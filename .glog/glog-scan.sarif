@@ -12,7 +12,7 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "glog-d902333c-49c0-492d-80e6-928874025794",
+              "id": "glog-b5f49c81-4a3b-4ce1-9b19-b178e341b2ea",
               "help": {
                 "text": ""
               },
@@ -23,7 +23,7 @@
               }
             },
             {
-              "id": "glog-0aa2a2ef-01cf-4830-83b0-65c861a5df51",
+              "id": "glog-60fe078d-66fb-4561-83d4-1d71504bb2f6",
               "help": {
                 "text": ""
               },
@@ -34,7 +34,7 @@
               }
             },
             {
-              "id": "glog-ab16a5f8-23a3-4ecf-a64e-45ff8d88cbf6",
+              "id": "glog-0c8ac41b-0f82-4726-87d1-9945c63fe6e7",
               "help": {
                 "text": ""
               },
@@ -45,7 +45,7 @@
               }
             },
             {
-              "id": "glog-16e73c11-2e88-41df-b9be-456419062178",
+              "id": "glog-a86fe70b-6903-4144-8c82-1f986559e953",
               "help": {
                 "text": ""
               },
@@ -67,7 +67,45 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "glog-0aa2a2ef-01cf-4830-83b0-65c861a5df51",
+          "ruleId": "glog-b5f49c81-4a3b-4ce1-9b19-b178e341b2ea",
+          "kind": "fail",
+          "level": "warning",
+          "message": {},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "roofline.cpp"
+                },
+                "region": {
+                  "startLine": 152,
+                  "startColumn": 28,
+                  "endLine": 152,
+                  "endColumn": 32,
+                  "charOffset": 6138,
+                  "charLength": 4,
+                  "snippet": {
+                    "text": "atoi",
+                    "rendered": {
+                      "text": "atoi",
+                      "markdown": "`atoi`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-60fe078d-66fb-4561-83d4-1d71504bb2f6",
           "kind": "fail",
           "level": "warning",
           "message": {},
@@ -105,7 +143,7 @@
           }
         },
         {
-          "ruleId": "glog-d902333c-49c0-492d-80e6-928874025794",
+          "ruleId": "glog-0c8ac41b-0f82-4726-87d1-9945c63fe6e7",
           "kind": "fail",
           "level": "warning",
           "message": {},
@@ -143,45 +181,7 @@
           }
         },
         {
-          "ruleId": "glog-ab16a5f8-23a3-4ecf-a64e-45ff8d88cbf6",
-          "kind": "fail",
-          "level": "warning",
-          "message": {},
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "roofline.cpp"
-                },
-                "region": {
-                  "startLine": 158,
-                  "startColumn": 29,
-                  "endLine": 158,
-                  "endColumn": 33,
-                  "charOffset": 6297,
-                  "charLength": 4,
-                  "snippet": {
-                    "text": "atoi",
-                    "rendered": {
-                      "text": "atoi",
-                      "markdown": "`atoi`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Moderate",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.BannedFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-16e73c11-2e88-41df-b9be-456419062178",
+          "ruleId": "glog-a86fe70b-6903-4144-8c82-1f986559e953",
           "kind": "fail",
           "level": "warning",
           "message": {},
