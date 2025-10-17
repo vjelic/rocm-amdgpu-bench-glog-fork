@@ -12,9 +12,10 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "glog-b5f49c81-4a3b-4ce1-9b19-b178e341b2ea",
+              "id": "935ec94e-9d93-3538-854b-15533b11614f",
               "help": {
-                "text": ""
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability refers to the use of insecure C library functions in C++ code. These functions are often prone to buffer overflow attacks, format string vulnerabilities, or integer overflows. In this case, the function `atoi()` is used, which can lead to integer overflow if the input string represents a number larger than `INT_MAX`.\n\n## Mitigation Advice\n\nAvoid using C library functions that do not perform bounds checking or that may result in undefined or unexpected behavior. Instead, use safer alternatives provided by the C++ Standard Library. For instance, instead of `atoi()`, consider using `std::stoi()` which throws an exception if the conversion cannot be performed or if the converted value is out of range.\n\n## Source Code Fix Recommendation\n\nReplace the `atoi()` function with `std::stoi()`. Here is the corrected code:\n\n```cpp\ntry {\n    numIters = std::stoi(optarg);\n} catch (std::invalid_argument& e) {\n    // Handle exception: input string does not represent a valid number\n} catch (std::out_of_range& e) {\n    // Handle exception: converted value would fall out of the range of the result type\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- `<string>`: for `std::stoi()`\n\n## References\n\n- [CWE-190: Integer Overflow or Wraparound](https://cwe.mitre.org/data/definitions/190.html)\n\nPlease note that the links provided are accessible to anonymous users at the time of writing this report."
               },
               "properties": {
                 "tags": [
@@ -23,9 +24,10 @@
               }
             },
             {
-              "id": "glog-60fe078d-66fb-4561-83d4-1d71504bb2f6",
+              "id": "7d930f04-b0cf-3c07-9020-3137f891df6d",
               "help": {
-                "text": ""
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ refers to the use of insecure C library functions that can lead to various security issues such as buffer overflows, format string vulnerabilities, integer overflows, etc. In this case, the function `atoi()` is used, which can lead to integer overflow if the input string represents a number larger than `INT_MAX`.\n\n## Mitigation Advice\n\nAvoid using C library functions that do not perform bounds checking or input validation. Instead, use safer alternatives provided by the C++ Standard Library. In this case, consider using `std::stoi()` function which throws an exception if the conversion cannot be performed or if the converted value is out of range.\n\n## Source Code Fix Recommendation\n\nReplace `atoi(optarg)` with `std::stoi(optarg)`. Make sure to handle the possible exceptions.\n\n```cpp\n#include <string>\n#include <stdexcept>\n\n// ...\n\ntry {\n    numWorkgroups = std::stoi(optarg);\n} catch (const std::invalid_argument& ia) {\n    // Handle the case where 'optarg' cannot be converted to an integer\n} catch (const std::out_of_range& oor) {\n    // Handle the case where the converted value is out of 'int' range\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following libraries:\n\n- `<string>`: for `std::stoi()`\n- `<stdexcept>`: for `std::invalid_argument` and `std::out_of_range`\n\n## References\n\n- [CWE-190: Integer Overflow or Wraparound](https://cwe.mitre.org/data/definitions/190.html)"
               },
               "properties": {
                 "tags": [
@@ -34,9 +36,10 @@
               }
             },
             {
-              "id": "glog-0c8ac41b-0f82-4726-87d1-9945c63fe6e7",
+              "id": "eab80cbe-a626-3050-9a68-e27f99fb9681",
               "help": {
-                "text": ""
+                "text": "",
+                "markdown": "## Description\n\nThe \"Prohibited C Function Found\" vulnerability in C++ refers to the use of certain C standard library functions that are considered unsafe due to their potential to cause buffer overflow, format string vulnerabilities, or other types of memory corruption. In this case, the `printf` function is used, which can lead to format string vulnerabilities if the format string contains user-supplied data.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use safer alternatives to these functions that include bounds checking or other mechanisms to prevent memory corruption. In the case of `printf`, consider using `fprintf` or `snprintf` instead, which are safer as they do not allow for format string vulnerabilities.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```cpp\n#include <cstdio>\n\n// ...\n\nfprintf(stderr, \"Unsupported device architecture \\\"%s\\\" will be skipped\\n\", gcnArch.c_str());\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `<cstdio>`: This is the C++ version of the C Standard Input and Output Library, which provides functions to perform input and output operations.\n\n## References\n\n- [OWASP C++ Secure Coding Practices Guide](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-676: Use of Potentially Dangerous Function](https://cwe.mitre.org/data/definitions/676.html)\n\nPlease note that the links provided are active and accessible to anonymous users at the time of writing."
               },
               "properties": {
                 "tags": [
@@ -45,9 +48,34 @@
               }
             },
             {
-              "id": "glog-a86fe70b-6903-4144-8c82-1f986559e953",
+              "id": "996d8893-4e4f-30ac-8593-e2ada255ab89",
               "help": {
-                "text": ""
+                "text": "",
+                "markdown": "## Description\n\n\"Prohibited C Function Identified\" is a vulnerability that arises when a program uses a function that is considered unsafe due to its potential for causing buffer overflows, format string vulnerabilities, or other issues. In this case, the function `atoi()` is used, which is a standard library function in C++ that converts a string to an integer. The `atoi()` function does not perform any error checking, so if the string cannot be converted into an integer, it will return zero. This can lead to unexpected behavior if the string is not a valid integer.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should replace the `atoi()` function with a function that performs error checking, such as `strtol()`. This function allows you to check if the entire string was converted into an integer, and if not, handle the error appropriately.\n\n## Source Code Fix Recommendation\n\nHere is a code snippet that shows how to use `strtol()` instead of `atoi()`:\n\n```cpp\n#include <cstdlib>\n#include <cerrno>\n\nchar *endptr;\nlong int datasetEntries = strtol(optarg, &endptr, 10);\n\nif (endptr == optarg) {\n    // handle the error: no characters were read\n} else if (*endptr != '\\0') {\n    // handle the error: the string contains non-digit characters\n} else if ((datasetEntries == LONG_MIN || datasetEntries == LONG_MAX) && errno == ERANGE) {\n    // handle the error: the number is out of the range of representable values\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `<cstdlib>`: This header file is needed for the `strtol()` function.\n- `<cerrno>`: This header file is needed to check if `strtol()` set the `errno` variable, indicating an error.\n\n## References\n\n- [CWE-242: Use of Inherently Dangerous Function](https://cwe.mitre.org/data/definitions/242.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "53d742f8-fce7-38d0-914f-96a23bd8b8dc",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability refers to the use of insecure C library functions that can lead to various security issues such as buffer overflows, format string vulnerabilities, integer overflows, etc. In this case, the function `atoi()` is used, which is a standard C library function that converts a string to an integer. The problem with `atoi()` is that it does not handle errors properly. If the input string cannot be converted into an integer, it returns zero, which can lead to unexpected behavior if not handled properly.\n\n## Mitigation Advice\n\nAvoid using `atoi()`. Instead, use functions that can handle errors properly. In C++, you can use `std::stoi()`, which throws an exception if the conversion fails. Always validate and sanitize user input to prevent injection attacks.\n\n## Source Code Fix Recommendation\n\nReplace `atoi(optarg)` with `std::stoi(optarg)`. Here is the fixed code:\n\n```cpp\ntry {\n    devID = std::stoi(optarg);\n} catch (std::invalid_argument& e) {\n    // handle error\n} catch (std::out_of_range& e) {\n    // handle error\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library:\n\n- `<cstdlib>`: This library is required for `atoi()`.\n- `<string>`: This library is required for `std::stoi()`.\n\n## References\n\n- [OWASP C++ Secure Coding Practices](https://cheatsheetseries.owasp.org/cheatsheets/C-Based_Toolchain_Hardening_Cheat_Sheet.html)\n- [CWE-242: Use of Inherently Dangerous Function](https://cwe.mitre.org/data/definitions/242.html)"
+              },
+              "properties": {
+                "tags": [
+                  "DS154189"
+                ]
+              }
+            },
+            {
+              "id": "ed494c19-1962-37a8-839f-ee7e1dfc0106",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Detected Prohibited C Function\" vulnerability in C++ refers to the use of certain C standard library functions that are known to be dangerous due to their potential to cause buffer overflows, format string vulnerabilities, or other issues. These functions are often prohibited in secure coding standards. In this case, the function `atoi()` is used, which can lead to integer overflow or underflow if the input is not properly validated.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to avoid using dangerous C functions and instead use safer alternatives that perform bounds checking or other forms of validation. In the case of `atoi()`, it does not perform any error checking, so if the conversion cannot be performed, it returns zero, which can lead to unexpected behavior. \n\n## Source Code Fix Recommendation\n\nA safer alternative to `atoi()` is `strtol()`, which provides error checking. Here is how you can use it:\n\n```cpp\n#include <cstdlib>\n#include <cerrno>\n\nchar *endptr;\nlong int workgroupSize = strtol(optarg, &endptr, 10);\n\nif (errno == ERANGE) {\n    // handle overflow or underflow\n} else if (endptr == optarg) {\n    // handle no digits were found\n} else {\n    // successful conversion\n}\n```\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- `cstdlib`: This library defines general purpose functions, including dynamic memory management, random number generation, communication with the environment, integer arithmetics, searching, sorting and converting.\n- `cerrno`: This library is used to check if any errors occurred during the conversion.\n\n## References\n\n- [OWASP C++](https://owasp.org/www-pdf-archive/OWASP_SCP_v2.pdf)\n- [CWE-242: Use of Inherently Dangerous Function](https://cwe.mitre.org/data/definitions/242.html)"
               },
               "properties": {
                 "tags": [
@@ -67,86 +95,12 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "glog-b5f49c81-4a3b-4ce1-9b19-b178e341b2ea",
+          "ruleId": "935ec94e-9d93-3538-854b-15533b11614f",
           "kind": "fail",
           "level": "warning",
-          "message": {},
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "roofline.cpp"
-                },
-                "region": {
-                  "startLine": 152,
-                  "startColumn": 28,
-                  "endLine": 152,
-                  "endColumn": 32,
-                  "charOffset": 6138,
-                  "charLength": 4,
-                  "snippet": {
-                    "text": "atoi",
-                    "rendered": {
-                      "text": "atoi",
-                      "markdown": "`atoi`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Moderate",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.BannedFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-60fe078d-66fb-4561-83d4-1d71504bb2f6",
-          "kind": "fail",
-          "level": "warning",
-          "message": {},
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "roofline.cpp"
-                },
-                "region": {
-                  "startLine": 155,
-                  "startColumn": 28,
-                  "endLine": 155,
-                  "endColumn": 32,
-                  "charOffset": 6217,
-                  "charLength": 4,
-                  "snippet": {
-                    "text": "atoi",
-                    "rendered": {
-                      "text": "atoi",
-                      "markdown": "`atoi`"
-                    }
-                  },
-                  "sourceLanguage": "cpp"
-                }
-              }
-            }
-          ],
-          "properties": {
-            "DevSkimSeverity": "Moderate",
-            "DevSkimConfidence": "High",
-            "tags": [
-              "API.DangerousAPI.BannedFunction"
-            ]
-          }
-        },
-        {
-          "ruleId": "glog-0c8ac41b-0f82-4726-87d1-9945c63fe6e7",
-          "kind": "fail",
-          "level": "warning",
-          "message": {},
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
           "locations": [
             {
               "physicalLocation": {
@@ -181,10 +135,132 @@
           }
         },
         {
-          "ruleId": "glog-a86fe70b-6903-4144-8c82-1f986559e953",
+          "ruleId": "7d930f04-b0cf-3c07-9020-3137f891df6d",
           "kind": "fail",
           "level": "warning",
-          "message": {},
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "roofline.cpp"
+                },
+                "region": {
+                  "startLine": 155,
+                  "startColumn": 28,
+                  "endLine": 155,
+                  "endColumn": 32,
+                  "charOffset": 6217,
+                  "charLength": 4,
+                  "snippet": {
+                    "text": "atoi",
+                    "rendered": {
+                      "text": "atoi",
+                      "markdown": "`atoi`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "eab80cbe-a626-3050-9a68-e27f99fb9681",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "\"Prohibited C Function Found\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "roofline.cpp"
+                },
+                "region": {
+                  "startLine": 205,
+                  "startColumn": 12,
+                  "endLine": 205,
+                  "endColumn": 18,
+                  "charOffset": 7854,
+                  "charLength": 6,
+                  "snippet": {
+                    "text": "printf",
+                    "rendered": {
+                      "text": "printf",
+                      "markdown": "`printf`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "996d8893-4e4f-30ac-8593-e2ada255ab89",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "\"Prohibited C Function Identified\""
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "roofline.cpp"
+                },
+                "region": {
+                  "startLine": 158,
+                  "startColumn": 29,
+                  "endLine": 158,
+                  "endColumn": 33,
+                  "charOffset": 6297,
+                  "charLength": 4,
+                  "snippet": {
+                    "text": "atoi",
+                    "rendered": {
+                      "text": "atoi",
+                      "markdown": "`atoi`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "53d742f8-fce7-38d0-914f-96a23bd8b8dc",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
           "locations": [
             {
               "physicalLocation": {
@@ -197,6 +273,46 @@
                   "endLine": 149,
                   "endColumn": 24,
                   "charOffset": 6059,
+                  "charLength": 4,
+                  "snippet": {
+                    "text": "atoi",
+                    "rendered": {
+                      "text": "atoi",
+                      "markdown": "`atoi`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "Moderate",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.BannedFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "ed494c19-1962-37a8-839f-ee7e1dfc0106",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Detected Prohibited C Function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "roofline.cpp"
+                },
+                "region": {
+                  "startLine": 152,
+                  "startColumn": 28,
+                  "endLine": 152,
+                  "endColumn": 32,
+                  "charOffset": 6138,
                   "charLength": 4,
                   "snippet": {
                     "text": "atoi",
